@@ -62,19 +62,33 @@ class dis7_test(unittest.TestCase):
     def setUp(self):
         self.race_dict = load_results('race_results.csv')
         self.max_tup_list = get_horse_results(self.race_dict)
-        self.month_avg_dict = get_avg_speed(self.race_dict_dict)
+        self.avg_dict = get_avg_speed(self.race_dict)
 
     def test_load_csv(self):
-        self.assertIsInstance(self.flight_dict['2021'], dict)
-        self.assertEqual(self.flight_dict['2020']['JUN'], '435')
+        # Outer keys are races
+        self.assertIsInstance(self.race_dict['Tenno Sho Fall'], dict)
+        # Check one horse's time
+        self.assertEqual(self.race_dict['Teio Sho']['Symboli_Rudolf'], '14.8')
 
-    def test_get_annual_max(self):
-        self.assertEqual(self.max_tup_list[2], ('2022', 'AUG', 628))
+    def test_get_horse_results(self):
+        # Max horse per race
+        expected = [
+            ('Tenno Sho Fall', 'Silence_Suzuka', 17.2),
+            ('Tenno Sho Spring', 'Silence_Suzuka', 17.5),
+            ('Teio Sho', 'Silence_Suzuka', 17.8)
+        ]
+        self.assertEqual(self.max_tup_list, expected)
 
-    def test_month_avg_list(self):
-        self.assertAlmostEqual(self.month_avg_dict['2020'], 398, 0)
+    def test_get_avg_speed(self):
+        # Average times rounded to nearest integer
+        avg_times = get_avg_speed(self.race_dict)
+        self.assertEqual(avg_times['Tenno Sho Fall'], round(
+            sum([16.5, 17.2, 16.9, 16.1, 16.8, 16.3, 17, 16.7, 16.4, 16.6, 15.5, 15.2])/12))
+        self.assertEqual(avg_times['Teio Sho'], round(
+            sum([17, 17.8, 17.3, 16.5, 17, 16.7, 17.4, 17, 16.8, 17.1, 15.9, 14.8])/12))
 
-#def main():
+
+def main():
     unittest.main(verbosity=2)
 
 if __name__ == '__main__':
